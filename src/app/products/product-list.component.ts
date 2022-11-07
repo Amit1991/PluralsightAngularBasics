@@ -1,19 +1,30 @@
 import { Component } from "@angular/core";
+import { IProduct } from "./products";
+import { OnInit } from "@angular/core";
 
 @Component({
     selector: 'pm-products',
-    templateUrl: './product-list.component.html'
+    templateUrl: './product-list.component.html',
+    styleUrls: ["./product-list.component.css"]
 })
 
-export class ProductListComponent {
+export class ProductListComponent implements OnInit {
     pageTitle: string = 'ACME Product List';
     imgWidth: number = 30;
     imgHieght: number = 30;
     imgMargin: number = 2;
     showImage: boolean = false;
-    listFilter: string = '';
+    private _listFilter: string = '';
+    get listFilter(): string {
+      return this._listFilter;
+    }
+    set listFilter(value: string) {
+      this._listFilter = value;
+      this.filteredProducts = this.performFilter(this._listFilter);
+    }
     listFilterPlaceholder: string = 'Type to filter';
-    products: any[] = [
+    filteredProducts: IProduct[] = [];
+    products: IProduct[] = [
         {
           "productId": 1,
           "productName": "Leaf Rake",
@@ -65,8 +76,21 @@ export class ProductListComponent {
           "imageUrl": "assets/images/xbox-controller.png"
         }
       ];
+
     toggleImage(): void {
 
       this.showImage = !this.showImage;
+    };
+
+    performFilter(value: string): IProduct[] {
+      
+      value = value.toLowerCase();
+      return this.products.filter(
+        (p: IProduct) => p.productName.toLowerCase().includes(value)
+      )
+    }
+
+    ngOnInit(): void {
+      this.listFilter = "";
     }
 }
